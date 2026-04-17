@@ -172,48 +172,56 @@ def analyze_website(url):
         try:
             domain_info = whois.whois(domain)
             creation_date = domain_info.creation_date
+
+            # Handle list case
             if isinstance(creation_date, list):
                 creation_date = creation_date[0]
 
             if creation_date:
-                age_days = (datetime.now() - creation_date).days
+                # Remove timezone if present
+                if hasattr(creation_date, "tzinfo") and creation_date.tzinfo is not None:
+                    creation_date = creation_date.replace(tzinfo=None)
+
+                now = datetime.now()
+                age_days = (now - creation_date).days
+
                 if age_days < 180:
                     results.append({
                         "Detected Element": "Domain Age",
-                        "Matched External Evidence": f"Domain is only {age_days} days old",
-                        "Rule Triggered": "New domain (< 6 months)",
+                        "Matched External Evidence": f"{age_days} days old",
+                        "Rule Triggered": "New domain",
                         "Risk Category": "Reputation Risk",
                         "Severity": "High",
-                        "Rationale": "Newly registered domains are a common fraud signal"
+                        "Rationale": "Recently created domains are risky"
                     })
                     score += 25
                 else:
                     results.append({
                         "Detected Element": "Domain Age",
-                        "Matched External Evidence": f"Domain is {age_days} days old ({age_days // 365} years)",
+                        "Matched External Evidence": f"{age_days} days old",
                         "Rule Triggered": "None",
                         "Risk Category": "None",
                         "Severity": "Safe",
-                        "Rationale": "Domain has been active for a significant time"
+                        "Rationale": "Domain age is sufficient"
                     })
             else:
                 results.append({
                     "Detected Element": "Domain Age",
-                    "Matched External Evidence": "Creation date not available in WHOIS",
+                    "Matched External Evidence": "Creation date not available",
                     "Rule Triggered": "Unable to verify",
                     "Risk Category": "Unknown Risk",
                     "Severity": "Low",
-                    "Rationale": "Could not determine domain age"
+                    "Rationale": "WHOIS data does not include creation date"
                 })
 
-        except Exception as e:
+        except Exception:
             results.append({
-                "Detected Element": "Domain Info (WHOIS)",
+                "Detected Element": "Domain Info",
                 "Matched External Evidence": "WHOIS lookup failed",
                 "Rule Triggered": "Unable to verify",
                 "Risk Category": "Unknown Risk",
                 "Severity": "Low",
-                "Rationale": f"Domain WHOIS data not available: {str(e)[:60]}"
+                "Rationale": "WHOIS service unavailable or restricted"
             })
 
         # NOTE: Google scraping removed — it's blocked by CAPTCHA and always fails silently.
