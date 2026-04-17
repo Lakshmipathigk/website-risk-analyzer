@@ -57,32 +57,21 @@ def analyze_website(url):
             })
             score += 25
 
-        # 3. Low Content Check (FINAL)
+        # 3. Smart Content Check (Balanced Fix)
         visible_text = soup.get_text(separator=" ").strip()
         words = visible_text.split()
 
-        if len(words) < 100:
+        # Apply only if NO meaningful signals found
+        if len(words) < 80 and not re.search(r"[a-zA-Z]{4,}", visible_text):
             results.append({
                 "Detected Element": "Website Content",
-                "Matched External Evidence": "Very low meaningful text",
+                "Matched External Evidence": "Very low meaningful content",
                 "Rule Triggered": "Insufficient readable content",
                 "Risk Category": "Suspicious Behavior",
                 "Severity": "Medium",
-                "Rationale": "Website content is too low or dynamically loaded"
+                "Rationale": "Website content is minimal or not properly accessible"
             })
-            score += 20
-
-        # 4. JavaScript / Dynamic Content Check
-        if "javascript" in response.text.lower():
-            results.append({
-                "Detected Element": "Dynamic Content",
-                "Matched External Evidence": "JavaScript-heavy page",
-                "Rule Triggered": "Client-side rendering",
-                "Risk Category": "Data Reliability Risk",
-                "Severity": "Medium",
-                "Rationale": "Content may not be fully accessible via scraping"
-            })
-            score += 10
+            score += 15
 
    
 
