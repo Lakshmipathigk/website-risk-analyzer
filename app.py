@@ -57,19 +57,32 @@ def analyze_website(url):
             })
             score += 25
 
-        # 3. Low Content Check (Improved)
+        # 3. Low Content Check (FINAL)
         visible_text = soup.get_text(separator=" ").strip()
+        words = visible_text.split()
 
-        if len(visible_text) < 500:
+        if len(words) < 100:
             results.append({
                 "Detected Element": "Website Content",
-                "Matched External Evidence": "Low visible content",
-                "Rule Triggered": "Insufficient meaningful content",
+                "Matched External Evidence": "Very low meaningful text",
+                "Rule Triggered": "Insufficient readable content",
                 "Risk Category": "Suspicious Behavior",
                 "Severity": "Medium",
-                "Rationale": "Website may have hidden or dynamically loaded content"
+                "Rationale": "Website content is too low or dynamically loaded"
             })
             score += 20
+
+        # 4. JavaScript / Dynamic Content Check
+        if "javascript" in response.text.lower():
+            results.append({
+                "Detected Element": "Dynamic Content",
+                "Matched External Evidence": "JavaScript-heavy page",
+                "Rule Triggered": "Client-side rendering",
+                "Risk Category": "Data Reliability Risk",
+                "Severity": "Medium",
+                "Rationale": "Content may not be fully accessible via scraping"
+            })
+            score += 10
 
    
 
