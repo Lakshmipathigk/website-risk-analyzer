@@ -7,9 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1GvFJpUzz-P5B-I2vvx4GmRLxIkCE67ri
 """
 
-!pip install python-whois
-
-!pip install requests beautifulsoup4 python-whois
 
 import requests
 from bs4 import BeautifulSoup
