@@ -164,24 +164,31 @@ def analyze_website(url):
     except Exception as e:
         return {"Error": str(e)}
 
+import streamlit as st
 
-# ---------------------------
-# RUN
-# ---------------------------
-url = input("Enter website URL: ")
-output = analyze_website(url)
+st.title("🔍 Website Risk Analyzer")
 
-print("\n===== RISK ANALYSIS REPORT =====\n")
+url = st.text_input("Enter Website URL")
 
-for item in output.get("Detailed Findings", []):
-    print("Detected Element:", item["Detected Element"])
-    print("Matched External Evidence:", item["Matched External Evidence"])
-    print("Rule Triggered:", item["Rule Triggered"])
-    print("Risk Category:", item["Risk Category"])
-    print("Severity:", item["Severity"])
-    print("Rationale:", item["Rationale"])
-    print("-" * 50)
+if st.button("Analyze"):
 
-print("\nOverall Risk Score:", output.get("Overall Risk Score"))
-print("Overall Merchant Risk Rating:", output.get("Overall Merchant Risk Rating"))
+    if url:
+        output = analyze_website(url)
 
+        st.subheader("📊 Overall Risk")
+        st.write("Risk Score:", output.get("Overall Risk Score"))
+        st.write("Risk Rating:", output.get("Overall Merchant Risk Rating"))
+
+        st.subheader("🔎 Detailed Findings")
+
+        for item in output.get("Detailed Findings", []):
+            st.write("**Detected Element:**", item["Detected Element"])
+            st.write("**Matched External Evidence:**", item["Matched External Evidence"])
+            st.write("**Rule Triggered:**", item["Rule Triggered"])
+            st.write("**Risk Category:**", item["Risk Category"])
+            st.write("**Severity:**", item["Severity"])
+            st.write("**Rationale:**", item["Rationale"])
+            st.markdown("---")
+
+    else:
+        st.warning("Please enter a URL")
