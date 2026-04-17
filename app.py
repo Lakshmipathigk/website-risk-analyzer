@@ -57,17 +57,19 @@ def analyze_website(url):
             })
             score += 25
 
-        # 3. Low Content Check
-        if len(text.strip()) < 200:
+        # 3. Low Content Check (Improved)
+        visible_text = soup.get_text(separator=" ").strip()
+
+        if len(visible_text) < 500:
             results.append({
                 "Detected Element": "Website Content",
-                "Matched External Evidence": "Very low or no readable content",
-                "Rule Triggered": "Insufficient content",
+                "Matched External Evidence": "Low visible content",
+                "Rule Triggered": "Insufficient meaningful content",
                 "Risk Category": "Suspicious Behavior",
                 "Severity": "Medium",
-                "Rationale": "Website content could not be properly extracted"
+                "Rationale": "Website may have hidden or dynamically loaded content"
             })
-            score += 15
+            score += 20
 
    
 
