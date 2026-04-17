@@ -30,6 +30,48 @@ def analyze_website(url):
         text = soup.get_text().lower()
 
         # ---------------------------
+        # EXTRA VALIDATION (NEW ADD)
+        # ---------------------------
+
+        # 1. Status Code Check
+        if response.status_code != 200:
+            results.append({
+                "Detected Element": "Website Availability",
+                "Matched External Evidence": f"Status Code {response.status_code}",
+                "Rule Triggered": "Site not accessible",
+                "Risk Category": "Technical Risk",
+                "Severity": "High",
+                "Rationale": "Website could not be accessed properly"
+            })
+            score += 30
+
+        # 2. Empty Content Check
+        if not text:
+            results.append({
+                "Detected Element": "Content Extraction",
+                "Matched External Evidence": "No text extracted",
+                "Rule Triggered": "Extraction failure",
+                "Risk Category": "Suspicious Behavior",
+                "Severity": "High",
+                "Rationale": "Unable to extract meaningful content"
+            })
+            score += 25
+
+        # 3. Low Content Check
+        if len(text.strip()) < 200:
+            results.append({
+                "Detected Element": "Website Content",
+                "Matched External Evidence": "Very low or no readable content",
+                "Rule Triggered": "Insufficient content",
+                "Risk Category": "Suspicious Behavior",
+                "Severity": "Medium",
+                "Rationale": "Website content could not be properly extracted"
+            })
+            score += 15
+
+   
+
+        # ---------------------------
         # A. WEBSITE ELEMENT EXTRACTION
         # ---------------------------
         emails = re.findall(r"[\w\.-]+@[\w\.-]+", text)
